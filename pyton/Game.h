@@ -13,7 +13,7 @@ public:
 	void Start();
 
 private:
-	int ÑalculateTactTime(LevelDifficulty level, GamerType type);
+	int CalculateTactTime(LevelDifficulty level, GamerType type);
 	bool AskParam(LevelDifficulty& level, GamerType& type);
 
 	IControler& _controler;
