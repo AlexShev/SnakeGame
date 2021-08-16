@@ -16,7 +16,7 @@ public:
 
     std::queue<Reduction>& GetReductions() { return _reductions; }
     int GetLenght() const { return _tail.size(); }
-    int GetTimeToDeleteTail() const { return _maxHangryLevel - _hangryLevel; }
+    int GetTimeToDeleteTail() const { return (_maxHangryLevel - _hangryLevel) % _maxHangryLevel; }
     Point GetHead() const { return _head; }
     const std::list<Point>& GetTail() const { return _tail; }
 

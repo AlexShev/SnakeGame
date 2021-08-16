@@ -14,7 +14,7 @@ public:
     void Reflection(std::queue<Reduction>& changes) override;
     void ShowScore(int score, int timeToDeleteTail, LevelDifficulty level) override;
     void ShowGemeOver() override;
-    void ShowError() override;
+    void ShowMessage(const char* message) override;
 
     bool IsInterrupt() override;
 
@@ -28,9 +28,5 @@ private:
     void PrintGamerType();
     void SetCursor(int x, int y);
     char GetSymbol(PointType condition);
-
-    const char* _GAME_OVER = " Game Over!!! ";
-    const char* _ERROR = "Somthing is not good, restart the game, please";
-    const char* _TRY_AGAIN = "Woulde you like try again? [y/n]";
 };
 

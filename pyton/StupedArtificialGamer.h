@@ -17,4 +17,3 @@ private:
     Snake& _snake;
     Point _startPosition;
 };
-

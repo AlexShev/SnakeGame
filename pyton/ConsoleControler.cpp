@@ -6,7 +6,7 @@
 
 bool ConsoleControler::AskRestart()
 {
-    std::cout << _TRY_AGAIN << std::endl;
+    std::cout << MESSAGES[tryAgain] << " [y/n]" << std::endl;
 
     auto answer = ReadData();
 
@@ -77,7 +77,7 @@ void ConsoleControler::ShowGemeOver()
     {
         SetCursor(width / 2 - 7, height / 2 - 1);
 
-        std::cout << _GAME_OVER;
+        std::cout << MESSAGES[gameOver];
 
         SetCursor(0, height + 2);
 
@@ -94,18 +94,18 @@ void ConsoleControler::ShowGemeOver()
 
     SetCursor(width / 2 - 7, height / 2 - 1);
 
-    std::cout << _GAME_OVER;
+    std::cout << MESSAGES[gameOver];
 
     SetCursor(0, height + 3);
 
     ClearConsoleAfterPress();
 }
 
-void ConsoleControler::ShowError()
+void ConsoleControler::ShowMessage(const char* message)
 {
     system("cls");
 
-    std::cout << _ERROR << std::endl;
+    std::cout << message << std::endl;
 }
 
 bool ConsoleControler::IsInterrupt()

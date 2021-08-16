@@ -21,7 +21,7 @@ void Game::Start()
 
             if (gamer == nullptr)
             {
-
+                _controler.ShowMessage(MESSAGES[MessageType::error]);
 
                 continue;
             }
@@ -65,7 +65,7 @@ bool Game::AskParam(LevelDifficulty &level, GamerType& type)
 
     while (level == LevelDifficulty::levelDifficultyError)
     {
-        _controler.ShowError();
+        _controler.ShowMessage(MESSAGES[inputError]);
 
         if (!_controler.AskRestart())
         {
@@ -79,7 +79,7 @@ bool Game::AskParam(LevelDifficulty &level, GamerType& type)
 
     while (type == GamerType::gamerTypeError)
     {
-        _controler.ShowError();
+        _controler.ShowMessage(MESSAGES[inputError]);
 
         if (!_controler.AskRestart())
         {

@@ -20,7 +20,7 @@ public:
     virtual void Reflection(std::queue<Reduction>& changes) = 0;
     virtual void ShowScore(int score, int timeToDeleteTail, LevelDifficulty level) = 0;
     virtual void ShowGemeOver() = 0;
-    virtual void ShowError() = 0;
+    virtual void ShowMessage(const char* message) = 0;
 
     int GetWidth() const { return _width; }
     int GetHeight() const { return _height; }

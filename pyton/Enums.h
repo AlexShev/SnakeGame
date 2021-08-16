@@ -1,5 +1,21 @@
 #pragma once
 
+enum MessageType 
+{
+	gameOver,
+	error,
+	inputError,
+	tryAgain,
+};
+
+static const char* MESSAGES[4]
+{
+	" Game Over!!! ",
+	"Somthing is not good, restart the game, please",
+	"The entered parameters are not correct",
+	"Woulde you like try again?",
+};
+
 enum GamerType
 {
 	human = 1,
