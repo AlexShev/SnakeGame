@@ -10,7 +10,7 @@ void Game::Start()
     {
         do
         {
-            int timeSliping = ÑalculateTactTime(level, type);
+            int timeSliping = CalculateTactTime(level, type);
 
             Snake snake(_controler.GetWidth() / 2, _controler.GetHeight() / 2, Direction::right);
             snake.SetMaxHangryLevel(level, _controler.GetHeight(), _controler.GetWidth());
@@ -92,7 +92,7 @@ bool Game::AskParam(LevelDifficulty &level, GamerType& type)
     return true;
 }
 
-int Game::ÑalculateTactTime(LevelDifficulty level, GamerType type)
+int Game::CalculateTactTime(LevelDifficulty level, GamerType type)
 {
     if (type == GamerType::human)
     {
