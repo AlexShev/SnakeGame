@@ -7,13 +7,15 @@ Direction AverageArtificialGamer::Comand()
     {
         std::list<Point> tempTail = _snake.GetTail();
 
-        std::vector<std::vector<int>> myMap(_field.height, std::vector<int>(_field.width));
+        std::vector<std::vector<int>> myMap(_field.GetHeight(), std::vector<int>(_field.GetWidth()));
 
-        for (size_t i = 0; i < _field.height; i++)
+        auto& field = _field.GetField();
+
+        for (size_t i = 0; i < _field.GetHeight(); i++)
         {
-            for (size_t j = 0; j < _field.width; j++)
+            for (size_t j = 0; j < _field.GetWidth(); j++)
             {
-                myMap[i][j] = int(_field.field[i][j]);
+                myMap[i][j] = int(field[i][j]);
             }
         }
 

@@ -86,18 +86,18 @@ Condition Snake::Move(Field& field, Direction dir)
         break;
     }
 
-    if ((newHead.x < 1) || (newHead.x >= field.width - 1) || (newHead.y < 1) || (newHead.y >= field.height - 1))
+    if ((newHead.x < 1) || (newHead.x >= field.GetWidth() - 1) || (newHead.y < 1) || (newHead.y >= field.GetHeight() - 1))
     {
         _hangryLevel = 0;
         res = Condition::dedth;
     }
-    else if (field.field[newHead.y][newHead.x] == food)
+    else if (field(newHead.y, newHead.x) == food)
     {
         AddTail(newHead);
         _hangryLevel = 0;
         field.DisappearFood(newHead);
     }
-    else if (field.field[newHead.y][newHead.x] == PointType::emptiness)
+    else if (field(newHead.y, newHead.x) == PointType::emptiness)
     {
         MoveTail(newHead);
         ++_hangryLevel;

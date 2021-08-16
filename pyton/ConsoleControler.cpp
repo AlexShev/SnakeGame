@@ -27,11 +27,14 @@ LevelDifficulty ConsoleControler::AskLevelDifficulty()
     return ReadLevelDifficulty();
 }
 
-void ConsoleControler::ShowInit(Field& fielde)
+void ConsoleControler::ShowFullFrame(Field& field)
 {
     system("cls");
 
-    for (auto& line : fielde.field)
+    auto& frame = field.GetField();
+
+
+    for (auto& line : frame)
     {
         for (auto simbol : line)
         {
@@ -41,8 +44,12 @@ void ConsoleControler::ShowInit(Field& fielde)
     }
 }
 
-void ConsoleControler::Reflection(std::queue<Reduction>& changes)
+void ConsoleControler::Reflection(Field& fielde)
 {
+    std::queue<Reduction> changes;
+
+    fielde.MoveReductions(changes);
+
     while (!changes.empty())
     {
         Reduction red = changes.front();
@@ -66,6 +73,8 @@ void ConsoleControler::ShowScore(int score, int timeToDeleteTail, LevelDifficult
     {
         std::cout << " Time to remove the tail: " << timeToDeleteTail << "          ";
     }
+
+    this->SetCursor(0, GetHeight() + 2);
 }
 
 void ConsoleControler::ShowGemeOver()

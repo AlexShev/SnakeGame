@@ -1,6 +1,6 @@
 #include "StupedArtificialGamer.h"
 
-StupedArtificialGamer::StupedArtificialGamer(Field& field, Snake& snake) : _field(field), _snake(snake), _startPosition(1, _field.height - 1)
+StupedArtificialGamer::StupedArtificialGamer(Field& field, Snake& snake) : _field(field), _snake(snake), _startPosition(1, _field.GetHeight() - 1)
 {
     int x = _snake.GetHead().x;
 
@@ -54,7 +54,7 @@ Direction StupedArtificialGamer::Comand()
         }
         else
         {
-            for (size_t i = _startPosition.x; i < _field.width - 3; ++i)
+            for (size_t i = _startPosition.x; i < _field.GetWidth() - 3; ++i)
             {
                 _comands.push(Direction::right);
             }
@@ -64,7 +64,7 @@ Direction StupedArtificialGamer::Comand()
                 _comands.push(Direction::up);
             }
 
-            for (int i = _field.width - 3; i > _startPosition.x; --i)
+            for (int i = _field.GetWidth() - 3; i > _startPosition.x; --i)
             {
                 _comands.push(Direction::left);
             }

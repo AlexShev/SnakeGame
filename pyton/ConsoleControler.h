@@ -10,8 +10,8 @@ public:
     GamerType AskGamerType() override;
     LevelDifficulty AskLevelDifficulty() override;
 
-    void ShowInit(Field& fielde) override;
-    void Reflection(std::queue<Reduction>& changes) override;
+    void ShowFullFrame(Field& fielde) override;
+    void Reflection(Field& fielde) override;
     void ShowScore(int score, int timeToDeleteTail, LevelDifficulty level) override;
     void ShowGemeOver() override;
     void ShowMessage(const char* message) override;

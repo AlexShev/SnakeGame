@@ -6,11 +6,10 @@
 #include <random>
 #include <set>
 
-struct Field
+class Field
 {
 public:
     Field(LevelDifficulty level, size_t height = 20, size_t width = 40);
-    void Init();
 
     void ChengeField(std::queue<Reduction>& reductions);
     
@@ -19,20 +18,28 @@ public:
     void DisappearFood();
     void GeneratFood(int snakeLengh);
 
-    std::vector<std::vector<PointType>> field;
-    std::queue<Reduction> reductions;
-    std::vector<std::set<int>> foods;
-
-    size_t width;
-    size_t height;
+    void MoveReductions(std::queue<Reduction>& toMove) { toMove = std::move(reductions); }
+    
+    PointType operator ()(size_t height, size_t width) const;
+    const std::vector<std::vector<PointType>>& GetField() const { return _field; }
+    size_t GetWidth() const { return _width; }
+    size_t GetHeight() const { return _height; }
 
 private:
+    void Init();
     int RandomInt(int min, int max);
     Point GeneratPoint();
+
+    std::vector<std::vector<PointType>> _field;
+    std::vector<std::set<int>> foods;
+    std::queue<Reduction> reductions;
 
     int _counterFood;
     int _maxFoodNumbers;
     LevelDifficulty _level;
+
+    size_t _width;
+    size_t _height;
 
     std::mt19937 _randomGenerator;
 };

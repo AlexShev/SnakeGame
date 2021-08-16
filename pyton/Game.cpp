@@ -29,7 +29,7 @@ void Game::Start()
             field.ChengeField(snake.GetReductions());
             field.GeneratFood(1);
 
-            _controler.ShowInit(field);
+            _controler.ShowFullFrame(field);
 
             Condition condition = Condition::live;
 
@@ -42,7 +42,7 @@ void Game::Start()
                 field.GeneratFood(snake.GetLenght() + 1);
                 field.MoveFood(snake.GetLenght() + 1);
                 
-                _controler.Reflection(field.reductions);
+                _controler.Reflection(field);
                 _controler.ShowScore(snake.GetLenght(), snake.GetTimeToDeleteTail(), level);
 
                 Sleep(timeSliping);
