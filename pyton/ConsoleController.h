@@ -1,10 +1,10 @@
 #pragma once
 #include "IController.h"
 
-class ConsoleController : public IController
+class ConsoleController final : public IController
 {
 public:
-    ConsoleController(size_t height, size_t width) : IController(width, height) { }
+    ConsoleController(size_t height, size_t width);
 
     bool AskRestart() override;
     GamerType AskGamerType() override;
@@ -13,7 +13,7 @@ public:
     void ShowFullFrame(Field& field) override;
     void Reflection(Field& field) override;
     void ShowScore(int score, int timeToDeleteTail, LevelDifficulty level) override;
-    void ShowGemeOver() override;
+    void ShowGameOver() override;
     void ShowMessage(const char* message) override;
 
     bool IsInterrupt() override;

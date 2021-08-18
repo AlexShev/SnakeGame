@@ -8,8 +8,8 @@
 class IController
 {
 public:
-	virtual ~IController() = default;
 	IController(size_t width, size_t height) : _width(width), _height(height) { }
+    virtual ~IController() = default;
 
     virtual bool AskRestart() = 0;
     virtual GamerType AskGamerType() = 0;
@@ -17,10 +17,10 @@ public:
 
     virtual bool IsInterrupt() = 0;
 
-    virtual void ShowFullFrame(Field& fielde) = 0;
-    virtual void Reflection(Field& fielde) = 0;
+    virtual void ShowFullFrame(Field& field) = 0;
+    virtual void Reflection(Field& field) = 0;
     virtual void ShowScore(const int score, const int timeToDeleteTail, const LevelDifficulty level) = 0;
-    virtual void ShowGemeOver() = 0;
+    virtual void ShowGameOver() = 0;
     virtual void ShowMessage(const char* message) = 0;
 
     int GetWidth() const { return _width; }

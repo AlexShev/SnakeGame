@@ -4,6 +4,8 @@
 #include <conio.h>
 #include <string>
 
+ConsoleController::ConsoleController(size_t height, size_t width): IController(width, height) { }
+
 bool ConsoleController::AskRestart()
 {
     std::cout << MESSAGES[tryAgain] << " [y/n]" << std::endl;
@@ -77,7 +79,7 @@ void ConsoleController::ShowScore(const int score, const int timeToDeleteTail, c
     this->SetCursor(0, GetHeight() + 2);
 }
 
-void ConsoleController::ShowGemeOver()
+void ConsoleController::ShowGameOver()
 {
     int width = GetWidth();
     int height = GetHeight();

@@ -50,7 +50,7 @@ void Game::Start()
 
             Sleep(1000);
 
-            _controler.ShowGemeOver();
+            _controler.ShowGameOver();
 
             delete gamer;
 
