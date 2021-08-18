@@ -5,5 +5,5 @@
 class Gamer : public IGamer
 {
 public:
-    Direction Comand() override;
+    Direction Command() override;
 };

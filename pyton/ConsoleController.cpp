@@ -1,10 +1,10 @@
-#include "ConsoleControler.h"
+#include "ConsoleController.h"
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
 #include <string>
 
-bool ConsoleControler::AskRestart()
+bool ConsoleController::AskRestart()
 {
     std::cout << MESSAGES[tryAgain] << " [y/n]" << std::endl;
 
@@ -13,30 +13,30 @@ bool ConsoleControler::AskRestart()
     return answer == "y" || answer == "";
 }
 
-GamerType ConsoleControler::AskGamerType()
+GamerType ConsoleController::AskGamerType()
 {
     PrintGamerType();
 
     return ReadGamerType();
 }
 
-LevelDifficulty ConsoleControler::AskLevelDifficulty()
+LevelDifficulty ConsoleController::AskLevelDifficulty()
 {
     PrintLevelDifficulty();
 
     return ReadLevelDifficulty();
 }
 
-void ConsoleControler::ShowFullFrame(Field& field)
+void ConsoleController::ShowFullFrame(Field& field)
 {
-    system("cls");
+    system("cls");  // NOLINT(concurrency-mt-unsafe)
 
     auto& frame = field.GetField();
 
 
     for (auto& line : frame)
     {
-        for (auto simbol : line)
+        for (const auto simbol : line)
         {
             std::cout << GetSymbol(simbol);
         }
@@ -44,15 +44,15 @@ void ConsoleControler::ShowFullFrame(Field& field)
     }
 }
 
-void ConsoleControler::Reflection(Field& fielde)
+void ConsoleController::Reflection(Field& field)
 {
     std::queue<Reduction> changes;
 
-    fielde.MoveReductions(changes);
+    field.MoveReductions(changes);
 
     while (!changes.empty())
     {
-        Reduction red = changes.front();
+	    const Reduction red = changes.front();
         changes.pop();
 
         this->SetCursor(red.point.x, red.point.y);
@@ -63,7 +63,7 @@ void ConsoleControler::Reflection(Field& fielde)
     this->SetCursor(0, GetHeight() + 2);
 }
 
-void ConsoleControler::ShowScore(int score, int timeToDeleteTail, LevelDifficulty level)
+void ConsoleController::ShowScore(const int score, const int timeToDeleteTail, const LevelDifficulty level)
 {
     SetCursor(0, GetHeight() + 1);
 
@@ -77,7 +77,7 @@ void ConsoleControler::ShowScore(int score, int timeToDeleteTail, LevelDifficult
     this->SetCursor(0, GetHeight() + 2);
 }
 
-void ConsoleControler::ShowGemeOver()
+void ConsoleController::ShowGemeOver()
 {
     int width = GetWidth();
     int height = GetHeight();
@@ -110,19 +110,19 @@ void ConsoleControler::ShowGemeOver()
     ClearConsoleAfterPress();
 }
 
-void ConsoleControler::ShowMessage(const char* message)
+void ConsoleController::ShowMessage(const char* message)
 {
     system("cls");
 
     std::cout << message << std::endl;
 }
 
-bool ConsoleControler::IsInterrupt()
+bool ConsoleController::IsInterrupt()
 {
     return GetKeyState(VK_ESCAPE) < 0;
 }
 
-char ConsoleControler::GetSymbol(PointType condition)
+char ConsoleController::GetSymbol(PointType condition)
 {
     switch (condition)
     {
@@ -142,7 +142,7 @@ char ConsoleControler::GetSymbol(PointType condition)
     return ' ';
 }
 
-void ConsoleControler::SetCursor(int x, int y)
+void ConsoleController::SetCursor(int x, int y)
 {
     COORD pos;
     pos.X = x;
@@ -152,7 +152,7 @@ void ConsoleControler::SetCursor(int x, int y)
 }
 
 
-void ConsoleControler::PrintLevelDifficulty()
+void ConsoleController::PrintLevelDifficulty()
 {
     system("cls");
 
@@ -162,7 +162,7 @@ void ConsoleControler::PrintLevelDifficulty()
     std::cout << LevelDifficulty::hard << " - hard level\n";
 }
 
-void ConsoleControler::PrintGamerType()
+void ConsoleController::PrintGamerType()
 {
     system("cls");
 
@@ -172,7 +172,7 @@ void ConsoleControler::PrintGamerType()
 }
 
 
-std::string ConsoleControler::ReadData()
+std::string ConsoleController::ReadData()
 {
     std::cout << ">> ";
     std::string answer;
@@ -180,12 +180,12 @@ std::string ConsoleControler::ReadData()
     return answer;
 }
 
-void ConsoleControler::ClearConsoleAfterPress()
+void ConsoleController::ClearConsoleAfterPress()
 {
     system("PAUSE"); system("cls");
 };
 
-int ConsoleControler::ReadInt()
+int ConsoleController::ReadInt()
 {
     int input = -1;
 
@@ -198,7 +198,7 @@ int ConsoleControler::ReadInt()
     return input;
 }
 
-LevelDifficulty ConsoleControler::ReadLevelDifficulty()
+LevelDifficulty ConsoleController::ReadLevelDifficulty()
 {
     int level = ReadInt();
 
@@ -210,7 +210,7 @@ LevelDifficulty ConsoleControler::ReadLevelDifficulty()
     return LevelDifficulty(level);
 }
 
-GamerType ConsoleControler::ReadGamerType()
+GamerType ConsoleController::ReadGamerType()
 {
     int type = ReadInt();
 

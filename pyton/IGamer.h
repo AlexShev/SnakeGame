@@ -4,5 +4,6 @@
 class IGamer
 {
 public:
-	virtual Direction Comand() = 0;
+	virtual ~IGamer() = default;
+	virtual Direction Command() = 0;
 };

@@ -1,17 +1,17 @@
 #pragma once
-#include "IControler.h"
+#include "IController.h"
 
-class ConsoleControler : public IControler
+class ConsoleController : public IController
 {
 public:
-    ConsoleControler(size_t height, size_t width) : IControler(width, height) { }
+    ConsoleController(size_t height, size_t width) : IController(width, height) { }
 
     bool AskRestart() override;
     GamerType AskGamerType() override;
     LevelDifficulty AskLevelDifficulty() override;
 
-    void ShowFullFrame(Field& fielde) override;
-    void Reflection(Field& fielde) override;
+    void ShowFullFrame(Field& field) override;
+    void Reflection(Field& field) override;
     void ShowScore(int score, int timeToDeleteTail, LevelDifficulty level) override;
     void ShowGemeOver() override;
     void ShowMessage(const char* message) override;

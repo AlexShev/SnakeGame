@@ -26,8 +26,8 @@ void Game::Start()
                 continue;
             }
 
-            field.ChengeField(snake.GetReductions());
-            field.GeneratFood(1);
+            field.ChangeField(snake.GetReductions());
+            field.GenerateFood(1);
 
             _controler.ShowFullFrame(field);
 
@@ -35,11 +35,11 @@ void Game::Start()
 
             while (condition == Condition::live && !_controler.IsInterrupt())
             {
-                Direction dir = gamer->Comand();
+                Direction dir = gamer->Command();
 
                 condition = snake.Move(field, dir);
 
-                field.GeneratFood(snake.GetLenght() + 1);
+                field.GenerateFood(snake.GetLenght() + 1);
                 field.MoveFood(snake.GetLenght() + 1);
                 
                 _controler.Reflection(field);

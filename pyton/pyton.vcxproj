@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AverageArtificialGamer.cpp" />
-    <ClCompile Include="ConsoleControler.cpp" />
+    <ClCompile Include="ConsoleController.cpp" />
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Gamer.cpp" />
@@ -151,13 +151,13 @@
   <ItemGroup>
     <ClInclude Include="AverageArtificialGamer.h" />
     <ClInclude Include="StupedArtificialGamer.h" />
-    <ClInclude Include="ConsoleControler.h" />
+    <ClInclude Include="ConsoleController.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Gamer.h" />
     <ClInclude Include="GamerFactory.h" />
-    <ClInclude Include="IControler.h" />
+    <ClInclude Include="IController.h" />
     <ClInclude Include="IGamer.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Reduction.h" />

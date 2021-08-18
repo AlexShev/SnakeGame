@@ -1,6 +1,6 @@
 #include "AverageArtificialGamer.h"
 
-Direction AverageArtificialGamer::Comand()
+Direction AverageArtificialGamer::Command()
 
 {
     if (_comands.empty())
@@ -15,34 +15,33 @@ Direction AverageArtificialGamer::Comand()
         {
             for (size_t j = 0; j < _field.GetWidth(); j++)
             {
-                myMap[i][j] = int(field[i][j]);
+                myMap[i][j] = static_cast<int>(field[i][j]);
             }
         }
 
-        Point food, currCenter;
+        Point food;
 
-        std::queue<Point> wave, nextWave;
+        std::queue<Point> nextWave;
         nextWave.push(_snake.GetHead());
 
         int d = 0;
 
         myMap[_snake.GetHead().y][_snake.GetHead().x] = 0;
 
-        bool isFoodFinded = false;
-        bool isFreeSpaseNeibor = true;
+        bool isFoodFunded = false;
+        bool isFreeSpaceNeighbor = true;
         auto tailNode = tempTail.rbegin();
 
-        while (!isFoodFinded && isFreeSpaseNeibor)
+        while (!isFoodFunded && isFreeSpaceNeighbor)
         {
-            wave = std::move(nextWave);
-            isFreeSpaseNeibor = false;
+            std::queue<Point> wave = std::move(nextWave);
+            isFreeSpaceNeighbor = false;
 
-            while (!wave.empty() && !isFoodFinded)
+            while (!wave.empty() && !isFoodFunded)
             {
-                currCenter = wave.front();
-                wave.pop();
+                isFoodFunded = AddPointsToNextWave(myMap, nextWave, wave.front(), d, food, isFreeSpaceNeighbor);
 
-                isFoodFinded = AddPointsToNextWave(myMap, nextWave, currCenter, d, food, isFreeSpaseNeibor);
+                wave.pop();
             }
 
             ++d;
@@ -54,7 +53,7 @@ Direction AverageArtificialGamer::Comand()
             }
         }
 
-        int len = myMap[food.y][food.x];            // длина кратчайшего пути из (ax, ay) в (bx, by)
+        const int len = myMap[food.y][food.x];            
         int x = food.x;
         int y = food.y;
 
@@ -98,7 +97,7 @@ Direction AverageArtificialGamer::GetComand()
     }
     else
     {
-        Direction answer = _comands.front();
+	    const Direction answer = _comands.front();
         _comands.pop_front();
         return answer;
     }

@@ -113,7 +113,7 @@ Condition Snake::Move(Field& field, Direction dir)
         res = DeleteTail() ? Condition::live : Condition::dedth;
     }
 
-    field.ChengeField(_reductions);
+    field.ChangeField(_reductions);
 
     return res;
 }

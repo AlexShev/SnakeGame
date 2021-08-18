@@ -37,7 +37,7 @@ StupedArtificialGamer::StupedArtificialGamer(Field& field, Snake& snake) : _fiel
     }
 }
 
-Direction StupedArtificialGamer::Comand()
+Direction StupedArtificialGamer::Command()
 {
     if (_comands.empty())
     {

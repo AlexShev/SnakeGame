@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Direction Gamer::Comand()
+Direction Gamer::Command()
 {
     if (GetKeyState(VK_UP) < 0)
     {

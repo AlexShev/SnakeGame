@@ -1,16 +1,20 @@
 #include "Field.h"
-#include <time.h>
+#include <ctime>
 #include <cassert>
 
-Field::Field(LevelDifficulty level, size_t height, size_t width) : _level(level), _width(width), _height(height)
+Field::Field(const LevelDifficulty level, const size_t height, const size_t width)
+: _level(level), _width(width), _height(height)
 {
     Init();
-    std::random_device device;
-    _randomGenerator.seed(device());
-    _maxFoodNumbers = std::max(1., std::sqrt(width + height ) / level);
+
+	std::random_device device;
+
+	_randomGenerator.seed(device());
+    _counterFood = 0;
+	_maxFoodNumbers = static_cast<int>(std::max(1., std::sqrt(width + height) / level));
 }
 
-void Field::ChengeField(std::queue<Reduction>& reductions)
+void Field::ChangeField(std::queue<Reduction>& reductions)
 {
     while (!reductions.empty())
     {
@@ -18,35 +22,35 @@ void Field::ChengeField(std::queue<Reduction>& reductions)
 
         reductions.pop();
 
-        this->reductions.push(red);
+        this->_reductions.push(red);
 
         _field[red.point.y][red.point.x] = red.type;
     }
 }
 
-void Field::MoveFood(int snakeLengh)
+void Field::MoveFood(int snakeLength)
 {
     if (_level >= LevelDifficulty::hard && RandomInt(0, _height) == 0)
     {
         DisappearFood();
-        GeneratFood(snakeLengh);
+        GenerateFood(snakeLength);
     }
 }
 
-int Field::RandomInt(int min, int max)
+int Field::RandomInt(const int min, const int max)
 {
     std::uniform_int_distribution<int> range(min, max);
 
     return range(_randomGenerator);
 }
 
-void Field::DisappearFood(Point pointToDisapper)
+void Field::DisappearFood(Point pointToDisappear)
 {
     --_counterFood;
 
-    foods[pointToDisapper.y].erase(pointToDisapper.x);
+    _foods[pointToDisappear.y].erase(pointToDisappear.x);
 
-    _field[pointToDisapper.y][pointToDisapper.x] = PointType::emptiness;
+    _field[pointToDisappear.y][pointToDisappear.x] = PointType::emptiness;
 }
 
 void Field::DisappearFood()
@@ -55,45 +59,43 @@ void Field::DisappearFood()
     
     do {
         pointToDisapper.y = RandomInt(1, _height - 1);
-    } while (foods[pointToDisapper.y].empty());
+    } while (_foods[pointToDisapper.y].empty());
 
-    pointToDisapper.x = *foods[pointToDisapper.y].begin();
+    pointToDisapper.x = *_foods[pointToDisapper.y].begin();
 
-    reductions.emplace(pointToDisapper, PointType::emptiness);
+    _reductions.emplace(pointToDisapper, PointType::emptiness);
 
     DisappearFood(pointToDisapper);
 }
 
-Point Field::GeneratPoint()
+Point Field::GeneratePoint()
 {
     return Point(RandomInt(1, _width - 1), RandomInt(1, _height - 1));
 }
 
-void Field::GeneratFood(int snakeLengh)
+void Field::GenerateFood(int snakeLength)
 {
-    Point food;
-
-    if (snakeLengh == (_height - 2) * (_width - 2) - _maxFoodNumbers)
+	if (snakeLength == static_cast<int>(_height - 2) * static_cast<int>(_width - 2) - _maxFoodNumbers)
     {
         _maxFoodNumbers = 1;
     }
 
-    if(snakeLengh == (_height - 2) * (_width - 2))
+    if(snakeLength == static_cast<int>(_height - 2) * static_cast<int>(_width - 2))
     {
         _maxFoodNumbers = 0;
     }
 
-    for (_counterFood; _counterFood < _maxFoodNumbers; _counterFood++)
+    for (; _counterFood < _maxFoodNumbers; _counterFood++)
     {
-        food = GeneratPoint();
+        Point food = GeneratePoint();
 
         if (_field[food.y][food.x] == PointType::emptiness)
         {
             _field[food.y][food.x] = PointType::food;
 
-            reductions.emplace(food, PointType::food);
+            _reductions.emplace(food, PointType::food);
 
-            foods[food.y].insert(food.x);
+            _foods[food.y].insert(food.x);
         }
         else
         {
@@ -102,7 +104,7 @@ void Field::GeneratFood(int snakeLengh)
     }
 }
 
-PointType Field::operator()(size_t height, size_t width) const
+PointType Field::operator()(const size_t height, const size_t width) const
 {
     assert(height < _height && width < _width);
 
@@ -113,7 +115,7 @@ void Field::Init()
 {
     _field = std::vector<std::vector<PointType>>(_height, std::vector<PointType>(_width, PointType::emptiness));
 
-    foods.resize(_height);
+    _foods.resize(_height);
 
     for (auto& i : _field[0])
     {
@@ -129,6 +131,4 @@ void Field::Init()
     {
         i = PointType::border;
     }
-
-    _counterFood = 0;
 }

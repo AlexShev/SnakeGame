@@ -7,7 +7,7 @@ class StupedArtificialGamer : public IGamer
 {
 public:
     StupedArtificialGamer(Field& field, Snake& snake);
-    Direction Comand() override;
+    Direction Command() override;
 
 private:
     Direction GetComand();

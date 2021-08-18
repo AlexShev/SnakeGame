@@ -1,11 +1,11 @@
 #include "Game.h"
-#include "ConsoleControler.h"
+#include "ConsoleController.h"
 
 int main()
 {
-    ConsoleControler consoleControler(20, 40);
+    ConsoleController consoleController(20, 40);
 
-    Game(consoleControler).Start();
+    Game(consoleController).Start();
 
     return 0;
 }

@@ -9,16 +9,16 @@
 class Field
 {
 public:
-    Field(LevelDifficulty level, size_t height = 20, size_t width = 40);
+	explicit Field(LevelDifficulty level, size_t height = 20, size_t width = 40);
 
-    void ChengeField(std::queue<Reduction>& reductions);
+    void ChangeField(std::queue<Reduction>& reductions);
     
-    void MoveFood(int snakeLengh);
-    void DisappearFood(Point pointToDisapper);
+    void MoveFood(int snakeLength);
+    void DisappearFood(Point pointToDisappear);
     void DisappearFood();
-    void GeneratFood(int snakeLengh);
+    void GenerateFood(int snakeLength);
 
-    void MoveReductions(std::queue<Reduction>& toMove) { toMove = std::move(reductions); }
+    void MoveReductions(std::queue<Reduction>& toMove) { toMove = std::move(_reductions); }
     
     PointType operator ()(size_t height, size_t width) const;
     const std::vector<std::vector<PointType>>& GetField() const { return _field; }
@@ -28,11 +28,11 @@ public:
 private:
     void Init();
     int RandomInt(int min, int max);
-    Point GeneratPoint();
+    Point GeneratePoint();
 
     std::vector<std::vector<PointType>> _field;
-    std::vector<std::set<int>> foods;
-    std::queue<Reduction> reductions;
+    std::vector<std::set<int>> _foods;
+    std::queue<Reduction> _reductions;
 
     int _counterFood;
     int _maxFoodNumbers;
