@@ -86,6 +86,7 @@ int main()
             assert(board(player.GetHead().y, player.GetHead().x) == snakeHead);
         }
         std::cout << "hard bot game " << game << ": " << survived << " ticks, score " << player.GetLenght() << "\n";
+        assert(survived >= 100);
     }
 
     std::cout << "core checks passed\n";

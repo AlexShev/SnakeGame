@@ -146,7 +146,7 @@ inline bool AverageArtificialGamer::IsFood(const std::vector<std::vector<int>>& 
 
 bool AverageArtificialGamer::AddPointsToNextWave(std::vector<std::vector<int>>& myMap, std::queue<Point>& nextWave, Point currCenter, int d, Point& food, bool& isFreeSpaseNeibor)
 {
-    for (int k = 0; k < 4; ++k)                    // ïðîõîäèì ïî âñåì íåïîìå÷åííûì ñîñåäÿì
+    for (int k = 0; k < 4; ++k)                    // Visit unmarked neighboring cells.
     {
         int iy = currCenter.y + dy[k], ix = currCenter.x + dx[k];
 
@@ -155,12 +155,12 @@ bool AverageArtificialGamer::AddPointsToNextWave(std::vector<std::vector<int>>& 
             if (myMap[iy][ix] == PointType::emptiness)
             {
                 isFreeSpaseNeibor = true;
-                myMap[iy][ix] = d + 1;      // ðàñïðîñòðàíÿåì âîëíó
+                myMap[iy][ix] = d + 1;      // Expand the wave.
                 nextWave.emplace(ix, iy);
             }
             else if (myMap[iy][ix] == PointType::food)
             {
-                myMap[iy][ix] = d + 1;      // ðàñïðîñòðàíÿåì âîëíó
+                myMap[iy][ix] = d + 1;      // Expand the wave.
                 food.y = iy;
                 food.x = ix;
                 return true;
