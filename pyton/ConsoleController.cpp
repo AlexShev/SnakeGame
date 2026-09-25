@@ -121,7 +121,7 @@ void ConsoleController::ShowMessage(const char* message)
 
 bool ConsoleController::IsInterrupt()
 {
-    return GetKeyState(VK_ESCAPE) < 0;
+    return GetAsyncKeyState(VK_ESCAPE) < 0;
 }
 
 char ConsoleController::GetSymbol(PointType condition)
