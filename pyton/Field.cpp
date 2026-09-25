@@ -1,10 +1,18 @@
 #include "Field.h"
 #include <ctime>
 #include <cassert>
+#include <algorithm>
+#include <cmath>
+#include <stdexcept>
 
 Field::Field(const LevelDifficulty level, const size_t height, const size_t width)
 : _level(level), _width(width), _height(height)
 {
+    if (width < 3 || height < 3)
+    {
+        throw std::invalid_argument("Field must be at least 3 by 3");
+    }
+
     Init();
 
 	std::random_device device;
@@ -28,12 +36,12 @@ void Field::ChangeField(std::queue<Reduction>& reductions)
     }
 }
 
-void Field::MoveFood(int snakeLength)
+void Field::MoveFood()
 {
-    if (_level >= LevelDifficulty::hard && RandomInt(0, _height) == 0)
+    if (_counterFood > 0 && _level >= LevelDifficulty::hard && RandomInt(0, static_cast<int>(_height)) == 0)
     {
         DisappearFood();
-        GenerateFood(snakeLength);
+        GenerateFood();
     }
 }
 
@@ -46,9 +54,12 @@ int Field::RandomInt(const int min, const int max)
 
 void Field::DisappearFood(Point pointToDisappear)
 {
-    --_counterFood;
+    if (_foods[pointToDisappear.y].erase(pointToDisappear.x) == 0)
+    {
+        return;
+    }
 
-    _foods[pointToDisappear.y].erase(pointToDisappear.x);
+    --_counterFood;
 
     _field[pointToDisappear.y][pointToDisappear.x] = PointType::emptiness;
 }
@@ -68,39 +79,31 @@ void Field::DisappearFood()
     DisappearFood(pointToDisapper);
 }
 
-Point Field::GeneratePoint()
+void Field::GenerateFood()
 {
-    return Point(RandomInt(1, _width - 1), RandomInt(1, _height - 1));
-}
-
-void Field::GenerateFood(int snakeLength)
-{
-	if (snakeLength == static_cast<int>(_height - 2) * static_cast<int>(_width - 2) - _maxFoodNumbers)
+    std::vector<Point> freeCells;
+    for (size_t y = 1; y + 1 < _height; ++y)
     {
-        _maxFoodNumbers = 1;
+        for (size_t x = 1; x + 1 < _width; ++x)
+        {
+            if (_field[y][x] == PointType::emptiness)
+            {
+                freeCells.emplace_back(static_cast<int>(x), static_cast<int>(y));
+            }
+        }
     }
 
-    if(snakeLength == static_cast<int>(_height - 2) * static_cast<int>(_width - 2))
+    while (_counterFood < _maxFoodNumbers && !freeCells.empty())
     {
-        _maxFoodNumbers = 0;
-    }
+        const int index = RandomInt(0, static_cast<int>(freeCells.size()) - 1);
+        const Point food = freeCells[index];
+        freeCells[index] = freeCells.back();
+        freeCells.pop_back();
 
-    for (; _counterFood < _maxFoodNumbers; _counterFood++)
-    {
-        Point food = GeneratePoint();
-
-        if (_field[food.y][food.x] == PointType::emptiness)
-        {
-            _field[food.y][food.x] = PointType::food;
-
-            _reductions.emplace(food, PointType::food);
-
-            _foods[food.y].insert(food.x);
-        }
-        else
-        {
-            --_counterFood;
-        }
+        _field[food.y][food.x] = PointType::food;
+        _reductions.emplace(food, PointType::food);
+        _foods[food.y].insert(food.x);
+        ++_counterFood;
     }
 }
 

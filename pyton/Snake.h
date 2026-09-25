@@ -18,6 +18,7 @@ public:
     int GetLenght() const { return _tail.size(); }
     int GetTimeToDeleteTail() const { return (_maxHangryLevel - _hangryLevel) % _maxHangryLevel; }
     Point GetHead() const { return _head; }
+    Direction GetDirection() const { return _dir; }
     const std::list<Point>& GetTail() const { return _tail; }
 
 private:

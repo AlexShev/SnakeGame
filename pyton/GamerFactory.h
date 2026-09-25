@@ -3,25 +3,31 @@
 #include "Gamer.h"
 #include "StupedArtificialGamer.h"
 #include "AverageArtificialGamer.h"
+#include "HardArtificialGamer.h"
+#include <memory>
 
 class GamerFactory
 {
 public:
-	IGamer* CreateIGamer(GamerType type, Field& field, Snake& snake, LevelDifficulty level)
+	std::unique_ptr<IGamer> CreateIGamer(GamerType type, Field& field, Snake& snake, LevelDifficulty level)
 	{
 		if (type == human)
 		{
-			return new Gamer();
+			return std::make_unique<Gamer>();
 		}
 		else if (type == artificial)
 		{
 			if (level == LevelDifficulty::easy)
 			{
-				return new StupedArtificialGamer(field, snake);
+				return std::make_unique<StupedArtificialGamer>(field, snake);
 			}
 			else if (level == LevelDifficulty::middle)
 			{
-				return new AverageArtificialGamer(field, snake);
+				return std::make_unique<AverageArtificialGamer>(field, snake);
+			}
+			else if (level == LevelDifficulty::hard)
+			{
+				return std::make_unique<HardArtificialGamer>(field, snake);
 			}
 		}
 
