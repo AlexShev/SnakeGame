@@ -2,36 +2,36 @@
 
 Direction Gamer::Command()
 {
-    if (GetKeyState(VK_UP) < 0)
+    if (GetAsyncKeyState(VK_UP) < 0)
     {
         return up;
     }
-    if (GetKeyState(VK_DOWN) < 0)
+    if (GetAsyncKeyState(VK_DOWN) < 0)
     {
         return down;
     }
-    if (GetKeyState(VK_LEFT) < 0)
+    if (GetAsyncKeyState(VK_LEFT) < 0)
     {
         return left;
     }
-    if (GetKeyState(VK_RIGHT) < 0)
+    if (GetAsyncKeyState(VK_RIGHT) < 0)
     {
         return right;
     }
 
-    if (GetKeyState('W') < 0)
+    if (GetAsyncKeyState('W') < 0)
     {
         return up;
     }
-    if (GetKeyState('S') < 0)
+    if (GetAsyncKeyState('S') < 0)
     {
         return down;
     }
-    if (GetKeyState('A') < 0)
+    if (GetAsyncKeyState('A') < 0)
     {
         return left;
     }
-    if (GetKeyState('D') < 0)
+    if (GetAsyncKeyState('D') < 0)
     {
         return right;
     }
