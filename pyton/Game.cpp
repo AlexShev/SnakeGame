@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "GamerFactory.h"
+#include <chrono>
 
 void Game::Start()
 {
@@ -32,20 +33,52 @@ void Game::Start()
             _controler.ShowFullFrame(field);
 
             Condition condition = Condition::live;
+            const auto tickDuration = std::chrono::milliseconds(timeSliping);
+            auto nextTick = std::chrono::steady_clock::now() + tickDuration;
 
-            while (condition == Condition::live && !_controler.IsInterrupt())
+            while (condition == Condition::live)
             {
-                Direction dir = gamer->Command();
+                Direction dir = Direction::nothing;
+
+                // Poll throughout the tick so a short press is kept for the next move.
+                while (std::chrono::steady_clock::now() < nextTick && !_controler.IsInterrupt())
+                {
+                    if (type == GamerType::human)
+                    {
+                        const Direction pressed = gamer->Command();
+                        if (pressed != Direction::nothing)
+                        {
+                            dir = pressed;
+                        }
+                    }
+
+                    Sleep(10);
+                }
+
+                if (_controler.IsInterrupt())
+                {
+                    break;
+                }
+
+                if (type == GamerType::artificial)
+                {
+                    dir = gamer->Command();
+                }
 
                 condition = snake.Move(field, dir);
 
                 field.GenerateFood(snake.GetLenght() + 1);
                 field.MoveFood(snake.GetLenght() + 1);
-                
+
                 _controler.Reflection(field);
                 _controler.ShowScore(snake.GetLenght(), snake.GetTimeToDeleteTail(), level);
 
-                Sleep(timeSliping);
+                nextTick += tickDuration;
+                const auto now = std::chrono::steady_clock::now();
+                if (nextTick < now)
+                {
+                    nextTick = now + tickDuration;
+                }
             }
 
             Sleep(1000);
