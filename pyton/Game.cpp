@@ -18,7 +18,7 @@ void Game::Start()
 
             Field field(level, _controler.GetHeight(), _controler.GetWidth());
 
-            IGamer* gamer = GamerFactory().CreateIGamer(type, field, snake, level);
+            auto gamer = GamerFactory().CreateIGamer(type, field, snake, level);
 
             if (gamer == nullptr)
             {
@@ -28,11 +28,12 @@ void Game::Start()
             }
 
             field.ChangeField(snake.GetReductions());
-            field.GenerateFood(1);
+            field.GenerateFood();
 
             _controler.ShowFullFrame(field);
 
             Condition condition = Condition::live;
+            bool won = false;
             const auto tickDuration = std::chrono::milliseconds(timeSliping);
             auto nextTick = std::chrono::steady_clock::now() + tickDuration;
 
@@ -67,11 +68,25 @@ void Game::Start()
 
                 condition = snake.Move(field, dir);
 
-                field.GenerateFood(snake.GetLenght() + 1);
-                field.MoveFood(snake.GetLenght() + 1);
+                if (condition == Condition::live)
+                {
+                    const int snakeLength = snake.GetLenght() + 1;
+                    const int capacity = static_cast<int>((field.GetHeight() - 2) * (field.GetWidth() - 2));
+                    won = snakeLength == capacity;
+                    if (!won)
+                    {
+                        field.GenerateFood();
+                        field.MoveFood();
+                    }
+                }
 
                 _controler.Reflection(field);
                 _controler.ShowScore(snake.GetLenght(), snake.GetTimeToDeleteTail(), level);
+
+                if (won)
+                {
+                    break;
+                }
 
                 nextTick += tickDuration;
                 const auto now = std::chrono::steady_clock::now();
@@ -83,9 +98,14 @@ void Game::Start()
 
             Sleep(1000);
 
-            _controler.ShowGameOver();
-
-            delete gamer;
+            if (won)
+            {
+                _controler.ShowMessage("You win!");
+            }
+            else
+            {
+                _controler.ShowGameOver();
+            }
 
         } while (_controler.AskRestart() && AskParam(level, type));
     }

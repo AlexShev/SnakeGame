@@ -13,10 +13,10 @@ public:
 
     void ChangeField(std::queue<Reduction>& reductions);
     
-    void MoveFood(int snakeLength);
+    void MoveFood();
     void DisappearFood(Point pointToDisappear);
     void DisappearFood();
-    void GenerateFood(int snakeLength);
+    void GenerateFood();
 
     void MoveReductions(std::queue<Reduction>& toMove) { toMove = std::move(_reductions); }
     
@@ -28,7 +28,6 @@ public:
 private:
     void Init();
     int RandomInt(int min, int max);
-    Point GeneratePoint();
 
     std::vector<std::vector<PointType>> _field;
     std::vector<std::set<int>> _foods;

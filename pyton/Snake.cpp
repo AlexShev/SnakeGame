@@ -41,7 +41,11 @@ void Snake::MoveTail(Point newHead)
     _tail.push_front(_head);
     _head = newHead;
 
-    _reductions.push(Reduction(_tail.back(), PointType::emptiness));
+    // The head may enter the cell the tail leaves on the same move.
+    if (!(_tail.back() == newHead))
+    {
+        _reductions.push(Reduction(_tail.back(), PointType::emptiness));
+    }
     _tail.pop_back();
 }
 
@@ -63,7 +67,10 @@ Condition Snake::Move(Field& field, Direction dir)
 {
     Condition res = live;
 
-    if (dir != Direction::nothing)
+    const bool reverse = (_dir == left && dir == right) || (_dir == right && dir == left)
+        || (_dir == up && dir == down) || (_dir == down && dir == up);
+
+    if (dir != Direction::nothing && !(reverse && !_tail.empty()))
     {
         _dir = dir;
     }
@@ -97,7 +104,8 @@ Condition Snake::Move(Field& field, Direction dir)
         _hangryLevel = 0;
         field.DisappearFood(newHead);
     }
-    else if (field(newHead.y, newHead.x) == PointType::emptiness)
+    else if (field(newHead.y, newHead.x) == PointType::emptiness
+        || (!_tail.empty() && newHead == _tail.back()))
     {
         MoveTail(newHead);
         ++_hangryLevel;

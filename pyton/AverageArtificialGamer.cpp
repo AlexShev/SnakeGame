@@ -53,6 +53,42 @@ Direction AverageArtificialGamer::Command()
             }
         }
 
+        if (!isFoodFunded)
+        {
+            const Point head = _snake.GetHead();
+            const Direction directions[4] = { right, down, left, up };
+            const int dx[4] = { 1, 0, -1, 0 };
+            const int dy[4] = { 0, 1, 0, -1 };
+
+            for (int i = 0; i < 4; ++i)
+            {
+                const Point next(head.x + dx[i], head.y + dy[i]);
+                const Direction current = _snake.GetDirection();
+                const bool reverse = (current == left && directions[i] == right)
+                    || (current == right && directions[i] == left)
+                    || (current == up && directions[i] == down)
+                    || (current == down && directions[i] == up);
+
+                if (reverse && !_snake.GetTail().empty())
+                {
+                    continue;
+                }
+                if (next.x > 0 && next.y > 0
+                    && next.x < static_cast<int>(_field.GetWidth()) - 1
+                    && next.y < static_cast<int>(_field.GetHeight()) - 1)
+                {
+                    const PointType cell = _field(next.y, next.x);
+                    if (cell == emptiness || cell == PointType::food
+                        || (!_snake.GetTail().empty() && next == _snake.GetTail().back()))
+                    {
+                        return directions[i];
+                    }
+                }
+            }
+
+            return nothing;
+        }
+
         const int len = myMap[food.y][food.x];            
         int x = food.x;
         int y = food.y;
@@ -110,7 +146,7 @@ inline bool AverageArtificialGamer::IsFood(const std::vector<std::vector<int>>& 
 
 bool AverageArtificialGamer::AddPointsToNextWave(std::vector<std::vector<int>>& myMap, std::queue<Point>& nextWave, Point currCenter, int d, Point& food, bool& isFreeSpaseNeibor)
 {
-    for (int k = 0; k < 4; ++k)                    // проходим по всем непомеченным соседям
+    for (int k = 0; k < 4; ++k)                    // Visit unmarked neighboring cells.
     {
         int iy = currCenter.y + dy[k], ix = currCenter.x + dx[k];
 
@@ -119,12 +155,12 @@ bool AverageArtificialGamer::AddPointsToNextWave(std::vector<std::vector<int>>& 
             if (myMap[iy][ix] == PointType::emptiness)
             {
                 isFreeSpaseNeibor = true;
-                myMap[iy][ix] = d + 1;      // распространяем волну
+                myMap[iy][ix] = d + 1;      // Expand the wave.
                 nextWave.emplace(ix, iy);
             }
             else if (myMap[iy][ix] == PointType::food)
             {
-                myMap[iy][ix] = d + 1;      // распространяем волну
+                myMap[iy][ix] = d + 1;      // Expand the wave.
                 food.y = iy;
                 food.x = ix;
                 return true;
