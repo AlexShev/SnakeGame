@@ -170,7 +170,8 @@ void ConsoleController::PrintGamerType()
 
     std::cout << "Enter gamer type\n";
     std::cout << GamerType::human << " - you are a gamer\n";
-    std::cout << GamerType::artificial << " - our AI is a gamer\n";
+    std::cout << GamerType::artificial << " - algorithmic bot\n";
+    std::cout << GamerType::neural << " - neural bot\n";
 }
 
 
@@ -216,7 +217,7 @@ GamerType ConsoleController::ReadGamerType()
 {
     int type = ReadInt();
 
-    if (type < GamerType::human || type > GamerType::artificial)
+    if (type < GamerType::human || type > GamerType::neural)
     {
         return GamerType::gamerTypeError;
     }
