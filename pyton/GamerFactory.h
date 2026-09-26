@@ -12,6 +12,10 @@ class GamerFactory
 public:
 	std::unique_ptr<IGamer> CreateIGamer(GamerType type, Field& field, Snake& snake, LevelDifficulty level)
 	{
+		if (type == neural)
+		{
+			return std::make_unique<NeuralArtificialGamer>(field, snake);
+		}
 		if (type == human)
 		{
 			return std::make_unique<Gamer>();
