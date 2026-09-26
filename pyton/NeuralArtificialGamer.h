@@ -3,6 +3,7 @@
 #include "Field.h"
 #include "Snake.h"
 #include "HardArtificialGamer.h"
+#include "NeuralFeatures.h"
 #include <array>
 #include <string>
 #include <vector>
@@ -18,8 +19,8 @@ private:
     Snake& snake_;
     HardArtificialGamer fallback_;
     bool loaded_ = false;
-    std::array<float, 32*21> w1_{};
-    std::array<float, 32> b1_{};
-    std::array<float, 4*32> w2_{};
+    std::array<float, NeuralHiddenSize*NeuralInputSize> w1_{};
+    std::array<float, NeuralHiddenSize> b1_{};
+    std::array<float, 4*NeuralHiddenSize> w2_{};
     std::array<float, 4> b2_{};
 };
