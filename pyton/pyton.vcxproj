@@ -145,6 +145,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Gamer.cpp" />
     <ClCompile Include="HardArtificialGamer.cpp" />
+    <ClCompile Include="NeuralArtificialGamer.cpp" />
     <ClCompile Include="pyton.cpp" />
     <ClCompile Include="Snake.cpp" />
     <ClCompile Include="StupedArtificialGamer.cpp" />
@@ -159,6 +160,8 @@
     <ClInclude Include="Gamer.h" />
     <ClInclude Include="GamerFactory.h" />
     <ClInclude Include="HardArtificialGamer.h" />
+    <ClInclude Include="NeuralArtificialGamer.h" />
+    <ClInclude Include="NeuralFeatures.h" />
     <ClInclude Include="IController.h" />
     <ClInclude Include="IGamer.h" />
     <ClInclude Include="Point.h" />
