@@ -36,7 +36,7 @@ inline std::array<float, NeuralInputSize> NeuralFeatures(const Field& field, con
         result[4*d] = legal ? 1.f : 0.f;
         int nearest = w+h;
         for (const Point& p : foods)
-            nearest = std::min(nearest, std::abs(next.x-p.x)+std::abs(next.y-p.y));
+            nearest = (std::min)(nearest, std::abs(next.x-p.x)+std::abs(next.y-p.y));
         result[4*d+1] = 1.f - static_cast<float>(nearest)/(w+h);
         if (!legal) continue;
 
@@ -58,7 +58,7 @@ inline std::array<float, NeuralInputSize> NeuralFeatures(const Field& field, con
             const int distance = q.front().second;
             q.pop(); ++area;
             if (cells[p.y][p.x] == food)
-                foodDistance = std::min(foodDistance, distance);
+                foodDistance = (std::min)(foodDistance, distance);
             for (const Point& delta : offsets)
             {
                 const Point n(p.x+delta.x,p.y+delta.y);
@@ -71,7 +71,7 @@ inline std::array<float, NeuralInputSize> NeuralFeatures(const Field& field, con
         result[4*d+2] = static_cast<float>(area)/((w-2)*(h-2));
         result[4*d+3] = static_cast<float>(d < 2 ?
             (d == 0 ? next.x : w-1-next.x) : (d == 2 ? next.y : h-1-next.y))
-            / std::max(w,h);
+            / (std::max)(w,h);
         result[21+d] = 1.f - static_cast<float>(foodDistance)/(w+h);
     }
     const Direction dirs[4] = {left,right,up,down};
