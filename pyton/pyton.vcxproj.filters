@@ -39,6 +39,7 @@
     <ClCompile Include="StupedArtificialGamer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="NeuralArtificialGamer.cpp" />
     <ClCompile Include="HardArtificialGamer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -83,6 +84,8 @@
     <ClInclude Include="AverageArtificialGamer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="NeuralArtificialGamer.h" />
+    <ClInclude Include="NeuralFeatures.h" />
     <ClInclude Include="HardArtificialGamer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
