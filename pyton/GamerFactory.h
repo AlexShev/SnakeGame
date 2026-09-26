@@ -4,6 +4,7 @@
 #include "StupedArtificialGamer.h"
 #include "AverageArtificialGamer.h"
 #include "HardArtificialGamer.h"
+#include "NeuralArtificialGamer.h"
 #include <memory>
 
 class GamerFactory
