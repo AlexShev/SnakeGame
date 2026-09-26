@@ -61,7 +61,7 @@ void Game::Start()
                     break;
                 }
 
-                if (type == GamerType::artificial)
+                if (type != GamerType::human)
                 {
                     dir = gamer->Command();
                 }
