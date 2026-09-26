@@ -20,6 +20,7 @@ enum GamerType
 {
 	human = 1,
 	artificial = 2,
+    neural = 3,
 	gamerTypeError = -1
 };
 
