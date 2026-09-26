@@ -1,159 +1,141 @@
 #include "HardArtificialGamer.h"
 #include <algorithm>
 #include <array>
+#include <deque>
 #include <limits>
 #include <queue>
 #include <vector>
 
 namespace
 {
-    struct Step
-    {
-        Direction direction;
-        int dx;
-        int dy;
-    };
+    struct Step { Direction direction; int dx; int dy; };
+    const std::array<Step, 4> steps{{ {right, 1, 0}, {down, 0, 1},
+        {left, -1, 0}, {up, 0, -1} }};
 
-    const std::array<Step, 4> steps{ {
-        { right, 1, 0 }, { down, 0, 1 }, { left, -1, 0 }, { up, 0, -1 }
-    } };
-
-    bool IsReverse(Direction current, Direction requested)
+    bool Reverse(Direction a, Direction b)
     {
-        return (current == left && requested == right) || (current == right && requested == left)
-            || (current == up && requested == down) || (current == down && requested == up);
+        return (a == left && b == right) || (a == right && b == left)
+            || (a == up && b == down) || (a == down && b == up);
     }
 
-    bool Inside(const Field& field, Point point)
+    bool Inside(Point p, int w, int h)
     {
-        return point.x > 0 && point.y > 0
-            && point.x < static_cast<int>(field.GetWidth()) - 1
-            && point.y < static_cast<int>(field.GetHeight()) - 1;
+        return p.x > 0 && p.y > 0 && p.x < w - 1 && p.y < h - 1;
     }
 
-    struct Evaluation
+    // Search accessible space after a proposed sequence of moves. A path to
+    // the tail is a useful escape route when the snake has grown long.
+    int Space(Point head, const std::deque<Point>& body, int w, int h, bool& tailReachable)
     {
+        std::vector<bool> blocked(w * h, false), seen(w * h, false);
+        const auto id = [w](Point p) { return p.y * w + p.x; };
+        for (const Point& p : body) blocked[id(p)] = true;
+        if (!body.empty()) blocked[id(body.back())] = false;
+        std::queue<Point> pending;
+        pending.push(head);
+        seen[id(head)] = true;
         int area = 0;
-        int foodDistance = std::numeric_limits<int>::max();
-    };
-
-    Evaluation Evaluate(const Field& field, const Snake& snake, Point next, bool eatsFood)
-    {
-        const auto& cells = field.GetField();
-        const size_t height = field.GetHeight();
-        const size_t width = field.GetWidth();
-        std::vector<std::vector<bool>> blocked(height, std::vector<bool>(width, false));
-        std::vector<std::vector<bool>> seen(height, std::vector<bool>(width, false));
-
-        for (size_t y = 0; y < height; ++y)
+        tailReachable = body.empty();
+        while (!pending.empty())
         {
-            for (size_t x = 0; x < width; ++x)
+            const Point p = pending.front();
+            pending.pop();
+            ++area;
+            if (!body.empty() && p == body.back()) tailReachable = true;
+            for (const Step& s : steps)
             {
-                blocked[y][x] = cells[y][x] == snakeBody || cells[y][x] == snakeHead;
-            }
-        }
-
-        if (!eatsFood && !snake.GetTail().empty())
-        {
-            const Point tail = snake.GetTail().back();
-            blocked[tail.y][tail.x] = false;
-        }
-
-        // The old head becomes body unless the snake had no tail and did not eat.
-        const Point head = snake.GetHead();
-        blocked[head.y][head.x] = eatsFood || !snake.GetTail().empty();
-        blocked[next.y][next.x] = false;
-
-        std::queue<std::pair<Point, int>> wave;
-        wave.push({ next, 0 });
-        seen[next.y][next.x] = true;
-
-        Evaluation result;
-        if (eatsFood)
-        {
-            result.foodDistance = 0;
-        }
-
-        while (!wave.empty())
-        {
-            const Point point = wave.front().first;
-            const int distance = wave.front().second;
-            wave.pop();
-            ++result.area;
-
-            if (cells[point.y][point.x] == food && !(point == next && eatsFood))
-            {
-                result.foodDistance = std::min(result.foodDistance, distance);
-            }
-
-            for (const Step& step : steps)
-            {
-                const Point neighbor(point.x + step.dx, point.y + step.dy);
-                if (Inside(field, neighbor) && !blocked[neighbor.y][neighbor.x]
-                    && !seen[neighbor.y][neighbor.x])
+                const Point n(p.x + s.dx, p.y + s.dy);
+                if (Inside(n, w, h) && !blocked[id(n)] && !seen[id(n)])
                 {
-                    seen[neighbor.y][neighbor.x] = true;
-                    wave.push({ neighbor, distance + 1 });
+                    seen[id(n)] = true;
+                    pending.push(n);
                 }
             }
         }
-
-        return result;
+        return area;
     }
 }
 
 Direction HardArtificialGamer::Command()
 {
+    const int w = static_cast<int>(_field.GetWidth());
+    const int h = static_cast<int>(_field.GetHeight());
     const Point head = _snake.GetHead();
-    const int snakeLength = _snake.GetLenght() + 1;
-    const int capacity = static_cast<int>((_field.GetWidth() - 2) * (_field.GetHeight() - 2));
+    const auto id = [w](Point p) { return p.y * w + p.x; };
+    std::deque<Point> initial(_snake.GetTail().begin(), _snake.GetTail().end());
+    const auto& cells = _field.GetField();
 
-    Direction best = nothing;
-    int bestArea = -1;
-    int bestDistance = std::numeric_limits<int>::max();
-    bool bestSafe = false;
-    bool bestHasFood = false;
-
-    for (const Step& step : steps)
+    struct Node
     {
-        if (!_snake.GetTail().empty() && IsReverse(_snake.GetDirection(), step.direction))
-        {
-            continue;
-        }
+        Point head;
+        std::deque<Point> body;
+        Direction first;
+        Direction last;
+        int depth;
+    };
+    // Bounded lookahead simulates the actual body, including growth on food.
+    // It is rebuilt every tick, accommodating moving food.
+    std::queue<Node> pending;
+    pending.push({head, initial, nothing, _snake.GetDirection(), 0});
+    const int horizon = w * h;
+    const int maxNodes = w * h;
+    std::vector<bool> visited(w * h, false);
+    visited[id(head)] = true;
+    int explored = 0;
+    Direction bestFood = nothing;
+    int bestFoodDepth = std::numeric_limits<int>::max();
+    Direction fallback = nothing;
+    int fallbackArea = -1;
 
-        const Point next(head.x + step.dx, head.y + step.dy);
-        if (!Inside(_field, next))
+    while (!pending.empty() && explored++ < maxNodes)
+    {
+        Node state = pending.front();
+        pending.pop();
+        if (state.depth >= horizon || state.depth >= bestFoodDepth) continue;
+        for (const Step& s : steps)
         {
-            continue;
-        }
+            if (!state.body.empty() && Reverse(state.last, s.direction)) continue;
+            const Point next(state.head.x + s.dx, state.head.y + s.dy);
+            if (!Inside(next, w, h)) continue;
+            const bool meal = cells[next.y][next.x] == food;
+            const bool tailLeaves = !meal && !state.body.empty();
+            bool collision = false;
+            for (size_t i = 0; i < state.body.size(); ++i)
+                if (next == state.body[i] && !(tailLeaves && i + 1 == state.body.size()))
+                    collision = true;
+            if (collision) continue;
 
-        const PointType cell = _field(next.y, next.x);
-        const bool enteringTail = !_snake.GetTail().empty() && next == _snake.GetTail().back();
-        if (cell != emptiness && cell != food && !enteringTail)
-        {
-            continue;
-        }
-
-        const bool eatsFood = cell == food;
-        const Evaluation evaluation = Evaluate(_field, _snake, next, eatsFood);
-        const int newLength = snakeLength + (eatsFood ? 1 : 0);
-        const int requiredArea = std::min(newLength + 1, capacity - newLength + 1);
-        const bool safe = evaluation.area >= requiredArea;
-        const bool hasFood = evaluation.foodDistance != std::numeric_limits<int>::max();
-
-        // Favor a reachable meal with escape space, then the largest open area.
-        if (best == nothing || (safe && hasFood && !(bestSafe && bestHasFood))
-            || (safe && hasFood && bestSafe && bestHasFood
-                && evaluation.foodDistance < bestDistance)
-            || (!(bestSafe && bestHasFood) && evaluation.area > bestArea))
-        {
-            best = step.direction;
-            bestArea = evaluation.area;
-            bestDistance = evaluation.foodDistance;
-            bestSafe = safe;
-            bestHasFood = hasFood;
+            Node candidate = state;
+            candidate.body.push_front(state.head);
+            if (!meal) candidate.body.pop_back();
+            candidate.head = next;
+            candidate.last = s.direction;
+            candidate.first = state.depth == 0 ? s.direction : state.first;
+            candidate.depth = state.depth + 1;
+            bool tailReachable = false;
+            const int area = (state.depth == 0 || meal)
+                ? Space(next, candidate.body, w, h, tailReachable) : 0;
+            if (state.depth == 0 && area > fallbackArea)
+            {
+                fallbackArea = area;
+                fallback = s.direction;
+            }
+            if (meal)
+            {
+                // Avoid taking food inside a pocket without a route to the tail.
+                if (tailReachable || candidate.body.empty())
+                {
+                    bestFood = candidate.first;
+                    bestFoodDepth = candidate.depth;
+                }
+                continue;
+            }
+            if (!visited[id(next)] && candidate.depth < bestFoodDepth)
+            {
+                visited[id(next)] = true;
+                pending.push(std::move(candidate));
+            }
         }
     }
-
-    return best;
+    return bestFood != nothing ? bestFood : fallback;
 }
