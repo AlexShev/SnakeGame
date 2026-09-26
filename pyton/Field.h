@@ -17,6 +17,7 @@ public:
     void DisappearFood(Point pointToDisappear);
     void DisappearFood();
     void GenerateFood();
+    void Seed(unsigned int seed) { _randomGenerator.seed(seed); }
 
     void MoveReductions(std::queue<Reduction>& toMove) { toMove = std::move(_reductions); }
     
