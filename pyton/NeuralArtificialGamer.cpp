@@ -28,7 +28,7 @@ Direction NeuralArtificialGamer::Command()
     {
         float value = b1_[i];
         for (int j = 0; j < NeuralInputSize; ++j) value += w1_[i*NeuralInputSize+j] * x[j];
-        hidden[i] = std::max(0.f, value);
+        hidden[i] = (std::max)(0.f, value);
     }
     const Direction dirs[4] = {left, right, up, down};
     Direction best = nothing;
