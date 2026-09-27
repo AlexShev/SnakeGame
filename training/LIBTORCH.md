@@ -14,11 +14,10 @@ models/neural_checkpoint.pth — checkpoint для продолжения обу
 
 Рекомендуемый способ — CMake из Developer PowerShell:
 
-    
     cmake -S . -B build-libtorch -G "Visual Studio 17 2022" -A x64 -DLIBTORCH_ROOT="C:\libs\libtorch"
-
     cmake --build build-libtorch --config Release
     .\build-libtorch\Release\SnakeGame.exe
+
 Путь `C:\libs\libtorch` — пример: укажите фактическую папку, в которой находится `share\cmake\Torch\TorchConfig.cmake`. Сам архив LibTorch нужно скачать и распаковать до запуска CMake. CMake скопирует DLL и модель рядом с игрой. Для прежнего pyton.sln задайте переменную окружения LIBTORCH_ROOT с этим путём перед запуском Visual Studio из того же PowerShell. Проект настроен на C++20, include/lib директории и копирование DLL; CMake предпочтителен, поскольку получает список библиотек из пакета Torch.
 
 
