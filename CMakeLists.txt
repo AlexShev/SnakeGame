@@ -1,6 +1,23 @@
 cmake_minimum_required(VERSION 3.22)
 project(SnakeGame LANGUAGES CXX)
-find_package(Torch REQUIRED)
+
+# Point this at the directory containing share/cmake/Torch/TorchConfig.cmake.
+# An explicit -DTorch_DIR=... or -DCMAKE_PREFIX_PATH=... also works.
+set(LIBTORCH_ROOT "" CACHE PATH "Path to the unpacked LibTorch directory")
+if(LIBTORCH_ROOT)
+    list(PREPEND CMAKE_PREFIX_PATH "${LIBTORCH_ROOT}")
+elseif(DEFINED ENV{LIBTORCH_ROOT} AND NOT "$ENV{LIBTORCH_ROOT}" STREQUAL "")
+    list(PREPEND CMAKE_PREFIX_PATH "$ENV{LIBTORCH_ROOT}")
+endif()
+
+find_package(Torch CONFIG QUIET)
+if(NOT Torch_FOUND)
+    message(FATAL_ERROR
+        "LibTorch was not found. Download and unpack the Windows x64 Release archive, "
+        "then configure with -DLIBTORCH_ROOT=C:/path/to/libtorch (the directory "
+        "containing share/cmake/Torch/TorchConfig.cmake). "
+        "Alternatively set Torch_DIR to the directory containing TorchConfig.cmake.")
+endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
