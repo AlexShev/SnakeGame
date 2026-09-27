@@ -1,49 +1,28 @@
-# Экспериментальный нейробот
+# Обучение нейробота
 
-Сеть 103 → 64 → 4 обучается на решениях алгоритмического бота. В обучении сначала собираются партии учителя, затем DAgger: часть ходов делает сеть, а учитель размечает состояния, в которые она попала. Веса лежат в `models/neural_weights.txt`. Во время игры Python не нужен.
+Сбор состояний запускает те же Field и Snake, что используются в игре. Учитель — алгоритмический бот сложного уровня. В режиме mix действия частично выбирает нейросеть, а учитель размечает состояния, в которые она попала. Это позволяет учиться на собственных ошибках.
 
-## Переобучение на Windows
+LibTorch запускает обученную модель внутри C++ игры. Python и PyTorch нужны только при обучении и экспорте. Подробная сборка Windows: [LIBTORCH.md](LIBTORCH.md).
 
-Откройте **Developer PowerShell for Visual Studio 2022** в корне проекта. Понадобится Python с NumPy (`py -m pip install numpy`).
+## Повторить обучение в Windows Developer PowerShell
 
-```powershell
-cl /std:c++14 /EHsc /O2 training\collect.cpp pyton\Field.cpp pyton\Snake.cpp pyton\HardArtificialGamer.cpp pyton\NeuralArtificialGamer.cpp /Fe:collect.exe
-.\collect.exe 60 teacher 1 2026 > teacher.csv
-py training\train.py models\neural_weights.txt teacher.csv
-.\collect.exe 80 mix 0.5 30000 > dagger.csv
-py training\train.py models\neural_weights.txt teacher.csv dagger.csv
-```
+После установки PyTorch CPU, NumPy и сборки проекта через CMake (см. LIBTORCH.md) из корня проекта:
 
-Сохраняйте предыдущую модель перед каждым новым раундом: дополнительные данные не обязательно улучшают самостоятельную игру. Файлы CSV большие и не нужны для запуска игры.
+    .\build-libtorch\Release\NeuralCollect.exe 60 teacher 1 2026 > teacher.csv
+    .\build-libtorch\Release\NeuralCollect.exe 80 mix 0.5 30000 > dagger.csv
+    py training\train_torch.py --resume --checkpoint models\neural_checkpoint.pth --export models\neural_candidate.txt --epochs 12 teacher.csv dagger.csv
 
-Для отдельной проверки на 50 одинаковых стартовых состояниях:
+Здесь .pth сохраняет веса и состояние оптимизатора для продолжения обучения. Файл neural_candidate.txt — вспомогательный экспорт для сравнения с прежним способом запуска; LibTorch его не читает. Для C++ игры экспортируйте .pt:
 
-```powershell
-cl /std:c++14 /EHsc /O2 training\benchmark.cpp pyton\Field.cpp pyton\Snake.cpp pyton\HardArtificialGamer.cpp pyton\NeuralArtificialGamer.cpp /Fe:benchmark.exe
-.\benchmark.exe 50 100000 0
-.\benchmark.exe 50 100000 1
-```
+    py training\export_libtorch.py models\neural_checkpoint.pth models\neural_policy.pt
 
-Последний аргумент: `0` — сеть, `1` — алгоритмический бот. Используйте семена, которых не было при обучении, и сравнивайте полные партии. Один и тот же seed воспроизводим в рамках одного компилятора; результаты разных C++ реализаций генератора случайных чисел могут различаться.
+Сделайте резервную копию исходных .pth и .pt перед обучением. Сначала проверьте нового кандидата на независимых seed: дополнительное обучение не гарантирует улучшения полных партий. Для запуска сравнения:
 
-## Проверка сохранённой модели
+    .\build-libtorch\Release\NeuralBenchmark.exe 50 100000 0
+    .\build-libtorch\Release\NeuralBenchmark.exe 50 100000 1
 
-В локальном C++14 прогоне по 50 партий с лимитом 1200 ходов сеть достигла лимита в 41 партии с семенами 100000–100049 и в 41 партии с семенами 200000–200049. Учитель достиг лимита соответственно в 46 и 43 партиях. Предыдущая сеть 21 → 32 → 4 достигла лимита только в 0 из 20 пробных партий. Это существенно лучше, но не гарантия выживания: при далёкой начальной еде можно погибнуть от голода даже при правильном маршруте.
+Последний аргумент: 0 — нейросеть, 1 — алгоритмический бот. Файл .pt загружается заново при каждом запуске программы. При изменении числа входов или выходов обновите NeuralFeatures.h и формат обучающих данных; число и устройство внутренних слоёв задаются моделью PyTorch и больше не повторяются в C++.
 
-В игре выбирайте третий уровень и тип `3 - neural bot`. Модель ищется в `models/` относительно рабочего каталога или в `../models/` при запуске из папки проекта Visual Studio. Если файла нет, используется алгоритмический бот. Изменения и модель пока экспериментальные; сборка Windows и управление в консоли требуют отдельной проверки.
+## Текущие результаты
 
-## Обучение через PyTorch
-
-Есть и реализация обучения на PyTorch. В `models/neural_checkpoint.pth` сохранены **те же веса**, что в рабочем `neural_weights.txt`, плюс состояние оптимизатора для дальнейшего обучения. `.pth` используется в Python; `NeuralArtificialGamer` продолжает читать экспортированный текстовый файл. Это разделяет зависимости для обучения и для запуска игры.
-
-В Developer PowerShell из корня проекта (команды `collect.exe` для получения CSV приведены выше):
-
-```powershell
-py -m pip install numpy
-py -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-py training\train_torch.py --resume --checkpoint models\neural_checkpoint.pth --export models\neural_candidate.txt --epochs 12 teacher.csv dagger.csv
-```
-
-Сравните кандидата в самостоятельных партиях перед заменой `models\neural_weights.txt`: дополнительное обучение может снизить результат. Чтобы создать новый `.pth` из рабочего текстового файла: `py training\create_checkpoint.py models\neural_weights.txt models\neural_checkpoint.pth`. После проверки копируйте выбранный `neural_candidate.txt` в `neural_weights.txt` и пересоберите или перезапустите игру. Формат и порядок весов проверяются при экспорте на одинаковых входах.
-
-LibTorch — официальная C++ библиотека PyTorch. Её можно подключить, если потребуется исполнять более сложную модель непосредственно в C++; для сети 103→64→4 нынешний C++ расчёт уменьшает размер и число зависимостей игры. `.pth` с `state_dict` не следует просто переименовывать или передавать текущему C++ загрузчику.
+Рабочий checkpoint соответствует предыдущей модели, которая достигала лимита 1200 ходов в 41 из 50 партий на обоих наборах seed 100000–100049 и 200000–200049. Проверка LibTorch на 20 партиях из каждого набора дала 17/20 и 16/20 соответственно. Результат зависит от случайного появления еды и не является гарантией. Более поздний кандидат PyTorch на одной серии сыграл хуже, поэтому не заменил рабочий checkpoint.

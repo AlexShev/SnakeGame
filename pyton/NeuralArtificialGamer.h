@@ -4,9 +4,7 @@
 #include "Snake.h"
 #include "HardArtificialGamer.h"
 #include "NeuralFeatures.h"
-#include <array>
-#include <string>
-#include <vector>
+#include <torch/script.h>
 
 class NeuralArtificialGamer : public IGamer
 {
@@ -18,9 +16,6 @@ private:
     Field& field_;
     Snake& snake_;
     HardArtificialGamer fallback_;
+    torch::jit::Module model_;
     bool loaded_ = false;
-    std::array<float, NeuralHiddenSize*NeuralInputSize> w1_{};
-    std::array<float, NeuralHiddenSize> b1_{};
-    std::array<float, 4*NeuralHiddenSize> w2_{};
-    std::array<float, 4> b2_{};
 };
